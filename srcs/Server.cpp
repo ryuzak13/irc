@@ -345,6 +345,8 @@ void Server::handleClientData(int fd) {
 
 	buffer[bytes] = '\0';
 	client->appendRecvBuffer(std::string(buffer, bytes));
+	// std::cout << "DEBUG: Client " << fd << " recv buffer: [" << client->getRecvBuffer() << "]" << std::endl;
+
 
 	// Process complete messages
 	while (true) {
@@ -389,6 +391,7 @@ void Server::setNonBlocking(int fd) {
 }
 
 void Server::processClientMessage(Client* client, const std::string& message) {
+	// std::cout << "DEBUG: Raw message from client " << client->getFd() << ": [" << message << "]" << std::endl;
 	Message msg(message);
 	if (!msg.getCommand().empty())
 		_commandHandler->execute(client, msg);

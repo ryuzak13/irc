@@ -28,7 +28,7 @@ void CommandHandler::handlePass(Client* client, const Message& msg) {
 	}
 
 	// Check if registration is complete
-	if (client->hasPassword() && client->hasNick() && client->hasUser()) {
+	if (client->hasPassword() && client->hasNick() && client->hasUser() && !client->isAuthenticated()) {
 		client->setAuthenticated(true);
 		std::string welcome = createReply(RPL::WELCOME, client->getNickname(),
 			":Welcome to the Internet Relay Network " + client->getPrefix());
@@ -99,7 +99,7 @@ void CommandHandler::handleUser(Client* client, const Message& msg) {
 	client->setRealname(msg.getTrailing());
 
 	// Check if registration is complete
-	if (client->hasPassword() && client->hasNick() && client->hasUser()) {
+	if (client->hasPassword() && client->hasNick() && client->hasUser() && !client->isAuthenticated()) {
 		client->setAuthenticated(true);
 		std::string welcome = createReply(RPL::WELCOME, client->getNickname(),
 			":Welcome to the Internet Relay Network " + client->getPrefix());

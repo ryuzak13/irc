@@ -14,8 +14,6 @@ private:
 	std::string			_sendBuffer;
 	bool				_isAuthenticated;
 	bool				_hasPassword;
-	bool				_hasNick;
-	bool				_hasUser;
 
 public:
 	// Constructor & Destructor

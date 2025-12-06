@@ -2,7 +2,7 @@
 #include <sstream>
 
 Client::Client(int fd) : _fd(fd), _isAuthenticated(false),
-						 _hasPassword(false), _hasNick(false), _hasUser(false) {
+						 _hasPassword(false) {
 }
 
 Client::~Client() {
@@ -46,17 +46,16 @@ bool Client::hasPassword() const {
 }
 
 bool Client::hasNick() const {
-	return _hasNick;
+	return !_nickname.empty();
 }
 
 bool Client::hasUser() const {
-	return _hasUser;
+	return !_username.empty() && !_realname.empty();
 }
 
 // Setters
 void Client::setNickname(const std::string& nickname) {
 	_nickname = nickname;
-	_hasNick = true;
 }
 
 void Client::setUsername(const std::string& username) {
@@ -69,7 +68,6 @@ void Client::setHostname(const std::string& hostname) {
 
 void Client::setRealname(const std::string& realname) {
 	_realname = realname;
-	_hasUser = true;
 }
 
 void Client::setPassword(bool status) {
@@ -98,16 +96,24 @@ void Client::clearSendBuffer(size_t len) {
 }
 
 bool Client::hasCompleteMessage() const {
-	return _recvBuffer.find("\r\n") != std::string::npos;
+	return _recvBuffer.find('\n') != std::string::npos;
 }
 
 std::string Client::extractMessage() {
-	size_t pos = _recvBuffer.find("\r\n");
+	size_t pos = _recvBuffer.find('\n');
 	if (pos == std::string::npos)
 		return "";
 
-	std::string message = _recvBuffer.substr(0, pos);
-	_recvBuffer.erase(0, pos + 2);
+	// Extract message, removing \r if it exists
+	size_t end = pos;
+	if (pos > 0 && _recvBuffer[pos - 1] == '\r') {
+		end = pos - 1;
+	}
+	std::string message = _recvBuffer.substr(0, end);
+
+	// Erase message and the newline from buffer
+	_recvBuffer.erase(0, pos + 1);
+
 	return message;
 }
 
